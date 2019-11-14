@@ -1,0 +1,60 @@
+<html>
+<head>
+    <title>99 CI LEAGUE</title>
+    <style>
+        td img {
+            width: 90px;
+            height: 90px;
+        }
+        td {
+            font-size: 50px;
+            padding-right: 50px;
+        }
+        body {
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        main {
+            width: 60%;
+        }
+        aside {
+            font-size: 2rem;
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>The past week's standings (team total: {{.Total}})</h1>
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2">Dev</th>
+            <th>Commits to master</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range .}}
+            <tr>
+                <td><img alt="{{.Dev.Name}}" src="{{.Dev.Avatar}}"/></td>
+                <td>{{.Dev.Name}}</td>
+                <td>{{.Integrations}}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</main>
+<aside>
+    <h1>You keep using the acronym CI but I do not think it means what you think it means</h1>
+    <h2>Here is our ground-breaking process</h2>
+    <ol>
+        <li>Do some damn work, make sure it's small. Big work is bad.</li>
+        <li><code>git commit -am "made the button pop"</code></li>
+        <li><code>git pull -r</code></li>
+        <li><code>./build.sh && git push</code></li>
+        <li>Repeat</li>
+    </ol>
+</aside>
+</body>
+</html>
