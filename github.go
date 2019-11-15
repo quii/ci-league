@@ -36,10 +36,21 @@ func sortedIntegrations(frequencies map[Dev]int) TeamIntegrations {
 	return integrations
 }
 
+func monday() time.Time {
+	date := time.Now()
+
+	for date.Weekday() != time.Monday {
+		date = date.Add(-1 * (time.Hour *24))
+	}
+
+	year, month, day := date.Date()
+
+	return time.Date(year, month, day, 0, 0, 0, 0, date.Location())
+}
+
 func getCommitFrequency(client *github.Client, ctx context.Context, repo string, idMappings map[string]string) map[Dev]int {
-	aWeekAgo := time.Now().Add(-7 * (time.Hour * 24))
 	options := github.CommitsListOptions{
-		Since:       aWeekAgo,
+		Since:       monday(),
 		ListOptions: github.ListOptions{},
 	}
 	var allCommits []*github.RepositoryCommit
