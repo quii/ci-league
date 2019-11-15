@@ -17,7 +17,7 @@ func NewServer(tmpl *template.Template, repo string, githubToken string, idMappi
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	err := s.tmpl.Execute(w, GetIntegrations(s.repo, s.githubToken, s.idMappings))
+	err := s.tmpl.Execute(w, GetIntegrations(r.Context(), s.repo, s.githubToken, s.idMappings))
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

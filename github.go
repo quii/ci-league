@@ -12,8 +12,7 @@ import (
 
 const owner = "mergermarket"
 
-func GetIntegrations(repo string, githubToken string, idMappings map[string]string) TeamIntegrations {
-	ctx := context.Background()
+func GetIntegrations(ctx context.Context, repo string, githubToken string, idMappings map[string]string) TeamIntegrations {
 	client := github.NewClient(createOAauth2HTTPClient(githubToken))
 
 	frequency := getCommitFrequency(client, ctx, repo, idMappings)
