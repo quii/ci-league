@@ -10,18 +10,11 @@ import (
 	"os"
 )
 
-const port = ":8000"
+const defaultPort = ":8000"
 
 func main() {
 
-	var client *github.Client
-
-	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
-		client = github.NewClient(ci_league.NewOAauth2HTTPClient(token))
-	} else {
-		fmt.Println("Warning, providing no GITHUB_TOKEN env var means this will only work for public repos")
-		client = github.NewClient(nil)
-	}
+	client := createGithubClient()
 
 	service := ci_league.NewGithubIntegrationsService(client, map[string]string{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
@@ -39,8 +32,29 @@ func main() {
 		service,
 	)
 
+	port := getPort()
+
 	fmt.Println("Listening on port", port)
 	if err := http.ListenAndServe(port, server); err != nil {
 		log.Fatalf("Couldn't launch server listening on %s, %s", port, err)
 	}
+}
+
+func createGithubClient() *github.Client {
+	var client *github.Client
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		client = github.NewClient(ci_league.NewOAauth2HTTPClient(token))
+	} else {
+		fmt.Println("Warning, providing no GITHUB_TOKEN env var means this will only work for public repos")
+		client = github.NewClient(nil)
+	}
+	return client
+}
+
+func getPort() string {
+	port := defaultPort
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		port = envPort
+	}
+	return port
 }

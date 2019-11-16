@@ -12,6 +12,11 @@ Generates a league table of committers to master for a given github repo
 
 Visit `http://localhost:8000?owner={owner}&repo={repo}`
 
+### options via environment variables
+
+- `PORT` defines the port the server listens on (default 8000)
+- `GITHUB_TOKEN` to get stats for private repos you'll need a [github access token](https://github.com/settings/tokens)
+
 ## test
 
 `$ go test`
