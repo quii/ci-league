@@ -13,13 +13,15 @@ import (
 const port = ":8000"
 
 func main() {
-	token := os.Getenv("GITHUB_TOKEN")
 
-	if token == "" {
-		log.Fatal("GITHUB_TOKEN env not set")
+	var client *github.Client
+
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		client = github.NewClient(ci_league.NewOAauth2HTTPClient(token))
+	} else {
+		fmt.Println("Warning, providing no GITHUB_TOKEN env var means this will only work for public repos")
+		client = github.NewClient(nil)
 	}
-
-	client := github.NewClient(ci_league.NewOAauth2HTTPClient(token))
 
 	service := ci_league.NewGithubIntegrationsService(client, map[string]string{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
