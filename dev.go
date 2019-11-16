@@ -19,4 +19,3 @@ func (t TeamIntegrations) Total() int {
 	}
 	return total
 }
-

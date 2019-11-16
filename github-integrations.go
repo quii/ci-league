@@ -10,7 +10,7 @@ import (
 
 type GithubIntegrationsService struct {
 	idMappings map[string]string
-	client *github.Client
+	client     *github.Client
 }
 
 func NewGithubIntegrationsService(client *github.Client, idMappings map[string]string) *GithubIntegrationsService {

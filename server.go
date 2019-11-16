@@ -35,7 +35,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	teamIntegrations, err := s.integrationsService.GetIntegrations(r.Context(), owner, repo)
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Problem getting integrations %s",err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Problem getting integrations %s", err), http.StatusInternalServerError)
 		return
 	}
 
