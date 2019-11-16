@@ -1,4 +1,4 @@
-# ci-league
+# ci-league ![build status](https://github.com/quii/ci-league/workflows/Test/badge.svg)
 
 Generates a league table of committers to master for a given github repo
 
