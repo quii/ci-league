@@ -4,21 +4,29 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/go-github/v28/github"
-	"golang.org/x/oauth2"
-	"net/http"
 	"sort"
 	"time"
 )
 
-const owner = "mergermarket"
+type GithubIntegrationsService struct {
+	idMappings map[string]string
+	client *github.Client
+}
 
-func GetIntegrations(ctx context.Context, repo string, githubToken string, idMappings map[string]string) TeamIntegrations {
-	client := github.NewClient(createOAauth2HTTPClient(githubToken))
+func NewGithubIntegrationsService(client *github.Client, idMappings map[string]string) *GithubIntegrationsService {
+	return &GithubIntegrationsService{client: client, idMappings: idMappings}
+}
 
-	frequency := getCommitFrequency(client, ctx, repo, idMappings)
+func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner string, repo string) (TeamIntegrations, error) {
+	frequency, err := getCommitFrequency(g.client, ctx, owner, repo, g.idMappings)
+
+	if err != nil {
+		return nil, err
+	}
+
 	integrations := sortedIntegrations(frequency)
 
-	return integrations
+	return integrations, nil
 }
 
 func sortedIntegrations(frequencies map[Dev]int) TeamIntegrations {
@@ -39,7 +47,7 @@ func monday() time.Time {
 	date := time.Now()
 
 	for date.Weekday() != time.Monday {
-		date = date.Add(-1 * (time.Hour *24))
+		date = date.Add(-1 * (time.Hour * 24))
 	}
 
 	year, month, day := date.Date()
@@ -47,14 +55,21 @@ func monday() time.Time {
 	return time.Date(year, month, day, 0, 0, 0, 0, date.Location())
 }
 
-func getCommitFrequency(client *github.Client, ctx context.Context, repo string, idMappings map[string]string) map[Dev]int {
+func getCommitFrequency(client *github.Client, ctx context.Context, owner string, repo string, idMappings map[string]string) (map[Dev]int, error) {
+
 	options := github.CommitsListOptions{
 		Since:       monday(),
 		ListOptions: github.ListOptions{},
 	}
 	var allCommits []*github.RepositoryCommit
+
 	for {
-		commits, response, _ := client.Repositories.ListCommits(ctx, owner, repo, &options)
+		commits, response, err := client.Repositories.ListCommits(ctx, owner, repo, &options)
+
+		if err != nil {
+			return nil, fmt.Errorf("couldn't get commits, %s", err)
+		}
+
 		allCommits = append(allCommits, commits...)
 
 		if response.NextPage == 0 {
@@ -70,8 +85,6 @@ func getCommitFrequency(client *github.Client, ctx context.Context, repo string,
 
 		if alias, found := idMappings[name]; found {
 			name = alias
-		} else {
-			fmt.Println("couldnt find", name)
 		}
 
 		if name != "" {
@@ -82,14 +95,5 @@ func getCommitFrequency(client *github.Client, ctx context.Context, repo string,
 		}
 	}
 
-	return commitFrequency
-}
-
-func createOAauth2HTTPClient(githubToken string) *http.Client {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: githubToken},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-	return tc
+	return commitFrequency, nil
 }
