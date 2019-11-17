@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/go-github/v28/github"
-	"sort"
 	"time"
 )
 
@@ -18,66 +17,23 @@ func NewGithubIntegrationsService(client *github.Client, idMappings map[string]s
 }
 
 func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner string, repo string) (TeamIntegrations, error) {
-	frequency, err := getCommitFrequency(g.client, ctx, owner, repo, g.idMappings)
+	frequency, err := g.getCommitFrequency(ctx, owner, repo, g.idMappings)
 
 	if err != nil {
 		return nil, err
 	}
 
-	integrations := sortedIntegrations(frequency)
-
+	integrations := NewTeamIntegrations(frequency)
 	return integrations, nil
 }
 
-func sortedIntegrations(frequencies map[Dev]int) TeamIntegrations {
-	var integrations []DevIntegrations
-	for dev, count := range frequencies {
-		integrations = append(integrations, DevIntegrations{
-			Dev:          dev,
-			Integrations: count,
-		})
-	}
-	sort.Slice(integrations, func(i, j int) bool {
-		return integrations[i].Integrations > integrations[j].Integrations
-	})
-	return integrations
-}
+func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repo string, idMappings map[string]string) (map[Dev]int, error) {
 
-func monday() time.Time {
-	date := time.Now()
-
-	for date.Weekday() != time.Monday {
-		date = date.Add(-1 * (time.Hour * 24))
+	allCommits, err := g.getCommits(ctx, owner, repo)
+	if err != nil {
+		return nil, err
 	}
 
-	year, month, day := date.Date()
-
-	return time.Date(year, month, day, 0, 0, 0, 0, date.Location())
-}
-
-func getCommitFrequency(client *github.Client, ctx context.Context, owner string, repo string, idMappings map[string]string) (map[Dev]int, error) {
-
-	options := github.CommitsListOptions{
-		Since:       monday(),
-		ListOptions: github.ListOptions{},
-	}
-	var allCommits []*github.RepositoryCommit
-
-	for {
-		commits, response, err := client.Repositories.ListCommits(ctx, owner, repo, &options)
-
-		if err != nil {
-			return nil, fmt.Errorf("couldn't get commits, %s", err)
-		}
-
-		allCommits = append(allCommits, commits...)
-
-		if response.NextPage == 0 {
-			break
-		}
-
-		options.Page = response.NextPage
-	}
 	commitFrequency := make(map[Dev]int)
 	for _, commit := range allCommits {
 
@@ -96,4 +52,40 @@ func getCommitFrequency(client *github.Client, ctx context.Context, owner string
 	}
 
 	return commitFrequency, nil
+}
+
+func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string, repo string) ([]*github.RepositoryCommit, error) {
+	options := github.CommitsListOptions{
+		Since:       monday(),
+		ListOptions: github.ListOptions{},
+	}
+	var allCommits []*github.RepositoryCommit
+	for {
+		commits, response, err := g.client.Repositories.ListCommits(ctx, owner, repo, &options)
+
+		if err != nil {
+			return nil, fmt.Errorf("couldn't get commits, %s", err)
+		}
+
+		allCommits = append(allCommits, commits...)
+
+		if response.NextPage == 0 {
+			break
+		}
+
+		options.Page = response.NextPage
+	}
+	return allCommits, nil
+}
+
+func monday() time.Time {
+	date := time.Now()
+
+	for date.Weekday() != time.Monday {
+		date = date.Add(-1 * (time.Hour * 24))
+	}
+
+	year, month, day := date.Date()
+
+	return time.Date(year, month, day, 0, 0, 0, 0, date.Location())
 }
