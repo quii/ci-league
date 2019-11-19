@@ -28,10 +28,16 @@ func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner s
 	return integrations, nil
 }
 
+var (
+	coAuthorRegex = regexp.MustCompile(`Co-authored-by:.*<(.*)>`)
+)
+
 func ExtractCoAuthor(message string) string {
-	compile, _ := regexp.Compile(`Co-authored-by:.*<(.*)>`)
-	stuff := compile.FindStringSubmatch(message)
-	return stuff[1]
+	matches := coAuthorRegex.FindStringSubmatch(message)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return ""
 }
 
 func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repo string, idMappings map[string]string) (map[Dev]int, error) {
