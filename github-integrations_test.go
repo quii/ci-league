@@ -16,3 +16,16 @@ func TestGithubIntegrationsService_GetIntegrations(t *testing.T) {
 		t.Fatalf("Failed to get integrations %s", err)
 	}
 }
+
+func TestExtractAuthor(t *testing.T) {
+	msg := `Remove default setting of anchor by useActiveNavItem
+
+Co-authored-by: LisaMcCormack <lisamccormack85@gmail.com>`
+
+	got := ci_league.ExtractCoAuthor(msg)
+	want := "lisamccormack85@gmail.com"
+
+	if got != want {
+		t.Errorf("got %q, want %s", got, want)
+	}
+}

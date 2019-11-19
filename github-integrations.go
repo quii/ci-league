@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/go-github/v28/github"
+	"regexp"
 	"time"
 )
 
@@ -25,6 +26,12 @@ func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner s
 
 	integrations := NewTeamIntegrations(frequency)
 	return integrations, nil
+}
+
+func ExtractCoAuthor(message string) string {
+	compile, _ := regexp.Compile(`Co-authored-by:.*<(.*)>`)
+	stuff := compile.FindStringSubmatch(message)
+	return stuff[1]
 }
 
 func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repo string, idMappings map[string]string) (map[Dev]int, error) {
