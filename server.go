@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -25,7 +24,7 @@ func NewServer(tmpl *template.Template, service IntegrationsService) *Server {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path=="/integrations" {
+	if r.URL.Path == "/integrations" {
 		owner := r.URL.Query().Get("owner")
 		repo := r.URL.Query().Get("repo")
 
@@ -40,8 +39,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		log.Println(teamIntegrations)
 
 		err = s.tmpl.Execute(w, teamIntegrations)
 
