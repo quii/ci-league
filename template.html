@@ -1,32 +1,73 @@
 <html>
 <head>
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
     <title>99 CI LEAGUE</title>
     <style>
+        *{
+            font-family: Fjalla One;
+            margin: 0;
+            border: 0;
+            padding: 0;
+            color: white;
+        }
+
+        html{
+            background-color: #000000;
+        }
+
+        table{
+            margin: 30px auto;
+            border-collapse: collapse;
+        }
+
+        body{
+            margin: 0px 0% 30px 0%;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+
         td img {
             width: 90px;
             height: 90px;
         }
-        td {
-            font-size: 50px;
-            padding-right: 50px;
+
+        th{
+            background-color: black;
+            color: white;
         }
-        body {
-            font-size: 1rem;
-            display: flex;
-            justify-content: space-between;
+
+        h1{
+            text-align: center;
+            text-decoration: none;
+            color: #ffe221;
+            margin: 30px;
+            display: block;
         }
-        main {
-            width: 60%;
+
+        td{
+            color: #77ff21;
+            text-align: center;
+            font-size: 4rem;
         }
-        aside {
-            font-size: 2rem;
-            width: 40%;
+
+        tr{
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        table td:nth-child(4){
+            color:red;
+        }
+
+        table td:nth-child(3){
+            color: #ffe221;
         }
     </style>
 </head>
 <body>
 <main>
-    <h1>This week's standings (team total: {{.Total}})</h1>
+    <h1>This week's standings continuous integration standings (team total: {{.Total}})</h1>
     <table>
         <thead>
         <tr>
@@ -47,16 +88,5 @@
         </tbody>
     </table>
 </main>
-<aside>
-    <h1>You keep using the acronym CI but I do not think it means what you think it means</h1>
-    <h2>Here is our ground-breaking process</h2>
-    <ol>
-        <li>Do some damn work, make sure it's small. Big work is bad.</li>
-        <li><code>git commit -am "made the button pop"</code></li>
-        <li><code>git pull -r</code></li>
-        <li><code>./build.sh && git push</code></li>
-        <li>Repeat</li>
-    </ol>
-</aside>
 </body>
 </html>
