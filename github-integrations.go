@@ -17,8 +17,8 @@ func NewGithubIntegrationsService(client *github.Client, idMappings map[string]s
 	return &GithubIntegrationsService{client: client, idMappings: idMappings}
 }
 
-func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner string, repo string) (TeamIntegrations, error) {
-	frequency, err := g.getCommitFrequency(ctx, owner, repo, g.idMappings)
+func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner string, repos []string) (TeamIntegrations, error) {
+	frequency, err := g.getCommitFrequency(ctx, owner, repos, g.idMappings)
 
 	if err != nil {
 		return nil, err
@@ -40,9 +40,9 @@ func ExtractCoAuthor(message string) string {
 	return ""
 }
 
-func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repo string, idMappings map[string]string) (map[Dev]int, error) {
+func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repos []string, idMappings map[string]string) (map[Dev]int, error) {
 
-	allCommits, err := g.getCommits(ctx, owner, repo)
+	allCommits, err := g.getCommits(ctx, owner, repos...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owne
 			avatars[name] = commit.GetAuthor().GetAvatarURL()
 		}
 
-		if coAuthor := ExtractCoAuthor(commit.GetCommit().GetMessage()); coAuthor!="" {
+		if coAuthor := ExtractCoAuthor(commit.GetCommit().GetMessage()); coAuthor != "" {
 			if alias, found := idMappings[coAuthor]; found {
 				coAuthor = alias
 			}
@@ -82,26 +82,29 @@ func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owne
 	return devs, nil
 }
 
-func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string, repo string) ([]*github.RepositoryCommit, error) {
-	options := github.CommitsListOptions{
-		Since:       monday(),
-		ListOptions: github.ListOptions{},
-	}
+func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string, repos ...string) ([]*github.RepositoryCommit, error) {
 	var allCommits []*github.RepositoryCommit
-	for {
-		commits, response, err := g.client.Repositories.ListCommits(ctx, owner, repo, &options)
 
-		if err != nil {
-			return nil, fmt.Errorf("couldn't get commits, %s", err)
+	for _, repo := range repos {
+		options := github.CommitsListOptions{
+			Since:       monday(),
+			ListOptions: github.ListOptions{},
 		}
+		for {
+			commits, response, err := g.client.Repositories.ListCommits(ctx, owner, repo, &options)
 
-		allCommits = append(allCommits, commits...)
+			if err != nil {
+				return nil, fmt.Errorf("couldn't get commits, %s", err)
+			}
 
-		if response.NextPage == 0 {
-			break
+			allCommits = append(allCommits, commits...)
+
+			if response.NextPage == 0 {
+				break
+			}
+
+			options.Page = response.NextPage
 		}
-
-		options.Page = response.NextPage
 	}
 	return allCommits, nil
 }

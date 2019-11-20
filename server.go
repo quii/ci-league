@@ -13,7 +13,7 @@ type Server struct {
 }
 
 type IntegrationsService interface {
-	GetIntegrations(ctx context.Context, owner string, repo string) (TeamIntegrations, error)
+	GetIntegrations(ctx context.Context, owner string, repos []string) (TeamIntegrations, error)
 }
 
 func NewServer(tmpl *template.Template, service IntegrationsService) *Server {
@@ -26,14 +26,14 @@ func NewServer(tmpl *template.Template, service IntegrationsService) *Server {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/integrations" {
 		owner := r.URL.Query().Get("owner")
-		repo := r.URL.Query().Get("repo")
+		repos := r.URL.Query()["repo"]
 
-		if owner == "" || repo == "" {
+		if owner == "" || len(repos) == 0 {
 			http.Error(w, "Please provide both 'owner' and 'repo' query string values", http.StatusBadRequest)
 			return
 		}
 
-		teamIntegrations, err := s.integrationsService.GetIntegrations(r.Context(), owner, repo)
+		teamIntegrations, err := s.integrationsService.GetIntegrations(r.Context(), owner, repos)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

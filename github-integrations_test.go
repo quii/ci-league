@@ -10,7 +10,7 @@ import (
 func TestGithubIntegrationsService_GetIntegrations(t *testing.T) {
 	client := github.NewClient(nil)
 	service := ci_league.NewGithubIntegrationsService(client, nil)
-	_, err := service.GetIntegrations(context.Background(), "quii", "ci-league")
+	_, err := service.GetIntegrations(context.Background(), "quii", []string{"ci-league"})
 
 	if err != nil {
 		t.Fatalf("Failed to get integrations %s", err)
