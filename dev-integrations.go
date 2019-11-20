@@ -7,31 +7,36 @@ type Dev struct {
 	Avatar string
 }
 
-type DevIntegrations struct {
-	Integrations int
+type GitStat struct {
+	Commits int
+	Failures int
+}
+
+type DevStats struct {
+	GitStat
 	Dev
 }
 
-type TeamIntegrations []DevIntegrations
+type TeamStats []DevStats
 
-func NewTeamIntegrations(frequencies map[Dev]int) TeamIntegrations {
-	var integrations []DevIntegrations
-	for dev, count := range frequencies {
-		integrations = append(integrations, DevIntegrations{
+func NewTeamStats(integrations map[Dev]GitStat) TeamStats {
+	var stats []DevStats
+	for dev, stat := range integrations {
+		stats = append(stats, DevStats{
 			Dev:          dev,
-			Integrations: count,
+			GitStat: stat,
 		})
 	}
-	sort.Slice(integrations, func(i, j int) bool {
-		return integrations[i].Integrations > integrations[j].Integrations
+	sort.Slice(stats, func(i, j int) bool {
+		return stats[i].Commits > stats[j].Commits
 	})
-	return integrations
+	return stats
 }
 
-func (t TeamIntegrations) Total() int {
+func (t TeamStats) Total() int {
 	total := 0
 	for _, integration := range t {
-		total += integration.Integrations
+		total += integration.Commits
 	}
 	return total
 }

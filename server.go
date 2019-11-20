@@ -13,7 +13,7 @@ type Server struct {
 }
 
 type IntegrationsService interface {
-	GetIntegrations(ctx context.Context, owner string, repos []string) (TeamIntegrations, error)
+	GetIntegrations(ctx context.Context, owner string, repos []string) (TeamStats, error)
 }
 
 func NewServer(tmpl *template.Template, service IntegrationsService) *Server {

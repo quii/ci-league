@@ -17,14 +17,14 @@ func NewGithubIntegrationsService(client *github.Client, idMappings map[string]s
 	return &GithubIntegrationsService{client: client, idMappings: idMappings}
 }
 
-func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner string, repos []string) (TeamIntegrations, error) {
-	frequency, err := g.getCommitFrequency(ctx, owner, repos, g.idMappings)
+func (g *GithubIntegrationsService) GetIntegrations(ctx context.Context, owner string, repos []string) (TeamStats, error) {
+	frequency, err := g.getCommitFrequency(ctx, owner, repos)
 
 	if err != nil {
 		return nil, err
 	}
 
-	integrations := NewTeamIntegrations(frequency)
+	integrations := NewTeamStats(frequency)
 	return integrations, nil
 }
 
@@ -40,7 +40,14 @@ func ExtractCoAuthor(message string) string {
 	return ""
 }
 
-func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repos []string, idMappings map[string]string) (map[Dev]int, error) {
+func (g *GithubIntegrationsService) findAlias(email string) string {
+	if alias, found := g.idMappings[email]; found {
+		return alias
+	}
+	return email
+}
+
+func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owner string, repos []string) (map[Dev]GitStat, error) {
 
 	allCommits, err := g.getCommits(ctx, owner, repos...)
 	if err != nil {
@@ -48,42 +55,50 @@ func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owne
 	}
 
 	commitFrequency := make(map[string]int)
+	failureFrequency := make(map[string]int)
 	avatars := make(map[string]string)
 	for _, commit := range allCommits {
+		alias := g.findAlias(commit.email)
 
-		name := commit.GetCommit().GetAuthor().GetEmail()
-
-		if alias, found := idMappings[name]; found {
-			name = alias
+		if commit.status == "failure" {
+			failureFrequency[alias]++
 		}
+		commitFrequency[alias]++
+		avatars[alias] = commit.avatarURL
 
-		if name != "" {
-			commitFrequency[name]++
-			avatars[name] = commit.GetAuthor().GetAvatarURL()
-		}
-
-		if coAuthor := ExtractCoAuthor(commit.GetCommit().GetMessage()); coAuthor != "" {
-			if alias, found := idMappings[coAuthor]; found {
-				coAuthor = alias
+		if coAuthor := ExtractCoAuthor(commit.message); coAuthor != "" {
+			coAuthor = g.findAlias(coAuthor)
+			if commit.status == "failure" {
+				failureFrequency[coAuthor]++
 			}
 			commitFrequency[coAuthor]++
 		}
 	}
 
-	devs := make(map[Dev]int)
+	devs := make(map[Dev]GitStat)
 
 	for name, score := range commitFrequency {
 		devs[Dev{
 			Name:   name,
 			Avatar: avatars[name],
-		}] = score
+		}] = GitStat{
+			Commits:  score,
+			Failures: failureFrequency[name],
+		}
 	}
 
 	return devs, nil
 }
 
-func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string, repos ...string) ([]*github.RepositoryCommit, error) {
-	var allCommits []*github.RepositoryCommit
+type simpleCommit struct {
+	email     string
+	avatarURL string
+	message   string
+	status    string
+}
+
+func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string, repos ...string) ([]simpleCommit, error) {
+	var allCommits []simpleCommit
 
 	for _, repo := range repos {
 		options := github.CommitsListOptions{
@@ -97,7 +112,19 @@ func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string
 				return nil, fmt.Errorf("couldn't get commits, %s", err)
 			}
 
-			allCommits = append(allCommits, commits...)
+			for _, commit := range commits {
+				status, _, err := g.client.Repositories.GetCombinedStatus(ctx, owner, repo, commit.GetSHA(), nil)
+
+				if err != nil {
+					return nil, fmt.Errorf("problem getting status %v", err)
+				}
+				allCommits = append(allCommits, simpleCommit{
+					email:     commit.GetCommit().GetAuthor().GetEmail(),
+					avatarURL: commit.GetAuthor().GetAvatarURL(),
+					message:   commit.GetCommit().GetMessage(),
+					status:    status.GetState(),
+				})
+			}
 
 			if response.NextPage == 0 {
 				break

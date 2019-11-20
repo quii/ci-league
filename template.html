@@ -32,6 +32,7 @@
         <tr>
             <th colspan="2">Dev</th>
             <th>Commits to master</th>
+            <th>Failures</th>
         </tr>
         </thead>
         <tbody>
@@ -39,7 +40,8 @@
             <tr>
                 <td><img alt="{{.Dev.Name}}" src="{{.Dev.Avatar}}"/></td>
                 <td>{{.Dev.Name}}</td>
-                <td>{{.Integrations}}</td>
+                <td>{{.GitStat.Commits}}</td>
+                <td>{{.GitStat.Failures}}</td>
             </tr>
         {{end}}
         </tbody>
