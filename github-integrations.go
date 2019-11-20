@@ -47,7 +47,8 @@ func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owne
 		return nil, err
 	}
 
-	commitFrequency := make(map[Dev]int)
+	commitFrequency := make(map[string]int)
+	avatars := make(map[string]string)
 	for _, commit := range allCommits {
 
 		name := commit.GetCommit().GetAuthor().GetEmail()
@@ -57,14 +58,28 @@ func (g *GithubIntegrationsService) getCommitFrequency(ctx context.Context, owne
 		}
 
 		if name != "" {
-			commitFrequency[Dev{
-				Name:   name,
-				Avatar: commit.GetAuthor().GetAvatarURL(),
-			}]++
+			commitFrequency[name]++
+			avatars[name] = commit.GetAuthor().GetAvatarURL()
+		}
+
+		if coAuthor := ExtractCoAuthor(commit.GetCommit().GetMessage()); coAuthor!="" {
+			if alias, found := idMappings[coAuthor]; found {
+				coAuthor = alias
+			}
+			commitFrequency[coAuthor]++
 		}
 	}
 
-	return commitFrequency, nil
+	devs := make(map[Dev]int)
+
+	for name, score := range commitFrequency {
+		devs[Dev{
+			Name:   name,
+			Avatar: avatars[name],
+		}] = score
+	}
+
+	return devs, nil
 }
 
 func (g *GithubIntegrationsService) getCommits(ctx context.Context, owner string, repo string) ([]*github.RepositoryCommit, error) {

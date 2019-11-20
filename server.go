@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -24,24 +25,29 @@ func NewServer(tmpl *template.Template, service IntegrationsService) *Server {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	owner := r.URL.Query().Get("owner")
-	repo := r.URL.Query().Get("repo")
+	if r.URL.Path=="/integrations" {
+		owner := r.URL.Query().Get("owner")
+		repo := r.URL.Query().Get("repo")
 
-	if owner == "" || repo == "" {
-		http.Error(w, "Please provide both 'owner' and 'repo' query string values", http.StatusBadRequest)
-		return
-	}
+		if owner == "" || repo == "" {
+			http.Error(w, "Please provide both 'owner' and 'repo' query string values", http.StatusBadRequest)
+			return
+		}
 
-	teamIntegrations, err := s.integrationsService.GetIntegrations(r.Context(), owner, repo)
+		teamIntegrations, err := s.integrationsService.GetIntegrations(r.Context(), owner, repo)
 
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Problem getting integrations %s", err), http.StatusInternalServerError)
-		return
-	}
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-	err = s.tmpl.Execute(w, teamIntegrations)
+		log.Println(teamIntegrations)
 
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Problem rendering integrations %s", err), http.StatusInternalServerError)
+		err = s.tmpl.Execute(w, teamIntegrations)
+
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Problem rendering integrations %s", err), http.StatusInternalServerError)
+			return
+		}
 	}
 }
