@@ -12,6 +12,10 @@ type GitStat struct {
 	Failures int
 }
 
+func (g *GitStat) Score() int {
+	return g.Commits - (g.Failures * 3)
+}
+
 type DevStats struct {
 	GitStat
 	Dev
@@ -28,7 +32,7 @@ func NewTeamStats(integrations map[Dev]GitStat) TeamStats {
 		})
 	}
 	sort.Slice(stats, func(i, j int) bool {
-		return stats[i].Commits > stats[j].Commits
+		return stats[i].Score() > stats[j].Score()
 	})
 	return stats
 }
@@ -37,6 +41,14 @@ func (t TeamStats) Total() int {
 	total := 0
 	for _, integration := range t {
 		total += integration.Commits
+	}
+	return total
+}
+
+func (t TeamStats) TotalFails() int {
+	total := 0
+	for _, integration := range t {
+		total += integration.Failures
 	}
 	return total
 }

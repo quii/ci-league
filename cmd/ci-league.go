@@ -26,6 +26,7 @@ func main() {
 		"riya_dattani@hotmail.com":    "Riya",
 		"lisamccormack85@gmail.com":   "Lisa",
 		"reis.ivo@gmail.com":          "Ivo",
+		"ckurzeja@scottlogic.com":     "CK",
 	})
 
 	server := ci_league.NewServer(

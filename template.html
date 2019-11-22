@@ -36,6 +36,8 @@
         th{
             background-color: black;
             color: white;
+            font-size: 2rem;
+            font-weight: bold;
         }
 
         h1{
@@ -63,17 +65,22 @@
         table td:nth-child(3){
             color: #ffe221;
         }
+
+        .fail {
+            color: red;
+        }
     </style>
 </head>
 <body>
 <main>
-    <h1>This week's standings continuous integration standings (team total: {{.Total}})</h1>
+    <h1>This week's continuous integration standings (team total: {{.Total}} - <span class="fail">{{.TotalFails}} failed builds</span>)</h1>
     <table>
         <thead>
         <tr>
             <th colspan="2">Dev</th>
             <th>Commits to master</th>
             <th>Failures</th>
+            <th>Score</th>
         </tr>
         </thead>
         <tbody>
@@ -83,6 +90,7 @@
                 <td>{{.Dev.Name}}</td>
                 <td>{{.GitStat.Commits}}</td>
                 <td>{{.GitStat.Failures}}</td>
+                <td>{{.GitStat.Score}}</td>
             </tr>
         {{end}}
         </tbody>
