@@ -19,4 +19,4 @@ Visit `http://localhost:8000?owner={owner}&repo={repo}`
 
 ## test
 
-`$ go test`
+`$ go test ./...`
