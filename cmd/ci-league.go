@@ -13,7 +13,7 @@ import (
 const defaultPort = ":8000"
 
 func main() {
-	client := github.NewClient(os.Getenv("GITHUB_TOKEN"))
+	client := github.NewClient(os.Getenv("GITHUB_TOKEN"), os.Stderr)
 
 	mappings := map[string]string{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",

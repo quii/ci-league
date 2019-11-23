@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/go-github/v28/github"
 	"golang.org/x/oauth2"
+	"io"
 	"net/http"
 )
 
@@ -17,12 +18,12 @@ func NewOAauth2HTTPClient(githubToken string) *http.Client {
 	return tc
 }
 
-func NewClient(token string) *github.Client {
+func NewClient(token string, out io.Writer) *github.Client {
 	var client *github.Client
 	if token != "" {
 		client = github.NewClient(NewOAauth2HTTPClient(token))
 	} else {
-		fmt.Println("Warning, providing no GITHUB_TOKEN env var means this will only work for public repos")
+		fmt.Fprintln(out, "Warning, providing no GITHUB_TOKEN env var means this will only work for public repos")
 		client = github.NewClient(nil)
 	}
 	return client
