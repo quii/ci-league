@@ -1,4 +1,4 @@
-package ci_league
+package league
 
 import (
 	"sort"

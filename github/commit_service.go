@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/go-github/v28/github"
-	"github.com/quii/ci-league"
+	"github.com/quii/ci-league/league"
 	"time"
 )
 
@@ -16,8 +16,8 @@ func NewService(client *github.Client) *Service {
 	return &Service{client: client}
 }
 
-func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string, repos ...string) ([]ci_league.SimpleCommit, error) {
-	var allCommits []ci_league.SimpleCommit
+func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string, repos ...string) ([]league.SimpleCommit, error) {
+	var allCommits []league.SimpleCommit
 
 	for _, repo := range repos {
 		options := github.CommitsListOptions{
@@ -37,7 +37,7 @@ func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string,
 				if err != nil {
 					return nil, fmt.Errorf("problem getting status %v", err)
 				}
-				allCommits = append(allCommits, ci_league.SimpleCommit{
+				allCommits = append(allCommits, league.SimpleCommit{
 					Email:     commit.GetCommit().GetAuthor().GetEmail(),
 					AvatarURL: commit.GetAuthor().GetAvatarURL(),
 					Message:   commit.GetCommit().GetMessage(),

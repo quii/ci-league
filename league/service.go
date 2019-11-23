@@ -1,4 +1,4 @@
-package ci_league
+package league
 
 import (
 	"context"
@@ -16,16 +16,16 @@ type CommitService interface {
 	GetCommits(ctx context.Context, since time.Time, owner string, repos ...string) ([]SimpleCommit, error)
 }
 
-type LeagueService struct {
+type Service struct {
 	idMappings map[string]string
 	commitService CommitService
 }
 
-func NewLeagueService(commitService CommitService, idMappings map[string]string) *LeagueService {
-	return &LeagueService{idMappings: idMappings, commitService: commitService}
+func NewService(commitService CommitService, idMappings map[string]string) *Service {
+	return &Service{idMappings: idMappings, commitService: commitService}
 }
 
-func (g *LeagueService) GetStats(ctx context.Context, owner string, repos []string) (TeamStats, error) {
+func (g *Service) GetStats(ctx context.Context, owner string, repos []string) (TeamStats, error) {
 	frequency, err := g.GetCommitFrequency(ctx, owner, repos)
 
 	if err != nil {
@@ -36,7 +36,7 @@ func (g *LeagueService) GetStats(ctx context.Context, owner string, repos []stri
 	return integrations, nil
 }
 
-func (g *LeagueService) GetCommitFrequency(ctx context.Context, owner string, repos []string) (map[Dev]GitStat, error) {
+func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []string) (map[Dev]GitStat, error) {
 
 	allCommits, err := g.commitService.GetCommits(ctx, monday(), owner, repos...)
 	if err != nil {
@@ -55,7 +55,7 @@ func (g *LeagueService) GetCommitFrequency(ctx context.Context, owner string, re
 		commitFrequency[alias]++
 		avatars[alias] = commit.AvatarURL
 
-		if coAuthor := ExtractCoAuthor(commit.Message); coAuthor != "" {
+		if coAuthor := extractCoAuthor(commit.Message); coAuthor != "" {
 			coAuthor = g.findAlias(coAuthor)
 			if commit.Status == "failure" {
 				failureFrequency[coAuthor]++
@@ -79,7 +79,7 @@ func (g *LeagueService) GetCommitFrequency(ctx context.Context, owner string, re
 	return devs, nil
 }
 
-func (g *LeagueService) findAlias(email string) string {
+func (g *Service) findAlias(email string) string {
 	if alias, found := g.idMappings[email]; found {
 		return alias
 	}

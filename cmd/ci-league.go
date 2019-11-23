@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/quii/ci-league"
 	"github.com/quii/ci-league/github"
+	"github.com/quii/ci-league/league"
 	"html/template"
 	"log"
 	"net/http"
@@ -28,11 +28,9 @@ func main() {
 		"ckurzeja@scottlogic.com":     "CK",
 	}
 
-	service := ci_league.NewLeagueService(github.NewService(client), mappings)
-
-	server := ci_league.NewServer(
+	server := league.NewServer(
 		template.Must(template.ParseFiles("template.html")),
-		service,
+		league.NewService(github.NewService(client), mappings),
 	)
 
 	port := getPort()
