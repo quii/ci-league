@@ -11,11 +11,12 @@ import (
 )
 
 const defaultPort = ":8000"
+const templatePath = "template.html"
 
 func main() {
 	client := github.NewClient(os.Getenv("GITHUB_TOKEN"), os.Stderr)
 
-	mappings := map[string]string{
+	mappings := InMemoryAliasService{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
 		"27856297+dependabot-preview[bot]@users.noreply.github.com": "Depandabot",
 		"qui666@gmail.com":            "Chris",
@@ -29,7 +30,7 @@ func main() {
 	}
 
 	server := league.NewServer(
-		template.Must(template.ParseFiles("template.html")),
+		template.Must(template.ParseFiles(templatePath)),
 		league.NewService(github.NewService(client), mappings),
 	)
 

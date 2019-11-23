@@ -32,17 +32,11 @@ func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string,
 			}
 
 			for _, commit := range commits {
-				status, _, err := g.client.Repositories.GetCombinedStatus(ctx, owner, repo, commit.GetSHA(), nil)
-
+				simpleCommit, err := g.newSimpleCommit(ctx, owner, repo, commit)
 				if err != nil {
-					return nil, fmt.Errorf("problem getting status %v", err)
+					return allCommits, err
 				}
-				allCommits = append(allCommits, league.SimpleCommit{
-					Email:     commit.GetCommit().GetAuthor().GetEmail(),
-					AvatarURL: commit.GetAuthor().GetAvatarURL(),
-					Message:   commit.GetCommit().GetMessage(),
-					Status:    status.GetState(),
-				})
+				allCommits = append(allCommits, simpleCommit)
 			}
 
 			if response.NextPage == 0 {
@@ -53,4 +47,21 @@ func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string,
 		}
 	}
 	return allCommits, nil
+}
+
+func (g *Service) newSimpleCommit(ctx context.Context, owner string, repo string, commit *github.RepositoryCommit) (league.SimpleCommit, error) {
+	status, _, err := g.client.Repositories.GetCombinedStatus(ctx, owner, repo, commit.GetSHA(), nil)
+
+	if err != nil {
+		return league.SimpleCommit{}, fmt.Errorf("problem getting status %v", err)
+	}
+
+	simpleCommit := league.SimpleCommit{
+		Email:     commit.GetCommit().GetAuthor().GetEmail(),
+		AvatarURL: commit.GetAuthor().GetAvatarURL(),
+		Message:   commit.GetCommit().GetMessage(),
+		Status:    status.GetState(),
+	}
+
+	return simpleCommit, nil
 }

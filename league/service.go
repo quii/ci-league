@@ -16,13 +16,17 @@ type CommitService interface {
 	GetCommits(ctx context.Context, since time.Time, owner string, repos ...string) ([]SimpleCommit, error)
 }
 
+type AliasService interface {
+	GetAlias(string) string
+}
+
 type Service struct {
-	idMappings    map[string]string
+	aliasService  AliasService
 	commitService CommitService
 }
 
-func NewService(commitService CommitService, idMappings map[string]string) *Service {
-	return &Service{idMappings: idMappings, commitService: commitService}
+func NewService(commitService CommitService, aliasService AliasService) *Service {
+	return &Service{aliasService: aliasService, commitService: commitService}
 }
 
 func (g *Service) GetStats(ctx context.Context, owner string, repos []string) (TeamStats, error) {
@@ -37,7 +41,6 @@ func (g *Service) GetStats(ctx context.Context, owner string, repos []string) (T
 }
 
 func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []string) (map[Dev]GitStat, error) {
-
 	allCommits, err := g.commitService.GetCommits(ctx, monday(), owner, repos...)
 	if err != nil {
 		return nil, err
@@ -47,7 +50,7 @@ func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []
 	failureFrequency := make(map[string]int)
 	avatars := make(map[string]string)
 	for _, commit := range allCommits {
-		alias := g.findAlias(commit.Email)
+		alias := g.aliasService.GetAlias(commit.Email)
 
 		if commit.Status == "failure" {
 			failureFrequency[alias]++
@@ -56,7 +59,7 @@ func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []
 		avatars[alias] = commit.AvatarURL
 
 		if coAuthor := extractCoAuthor(commit.Message); coAuthor != "" {
-			coAuthor = g.findAlias(coAuthor)
+			coAuthor = g.aliasService.GetAlias(coAuthor)
 			if commit.Status == "failure" {
 				failureFrequency[coAuthor]++
 			}
@@ -77,13 +80,6 @@ func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []
 	}
 
 	return devs, nil
-}
-
-func (g *Service) findAlias(email string) string {
-	if alias, found := g.idMappings[email]; found {
-		return alias
-	}
-	return email
 }
 
 func monday() time.Time {
