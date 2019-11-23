@@ -8,18 +8,18 @@ import (
 )
 
 type Server struct {
-	tmpl                *template.Template
-	integrationsService IntegrationsService
+	tmpl   *template.Template
+	league League
 }
 
-type IntegrationsService interface {
-	GetIntegrations(ctx context.Context, owner string, repos []string) (TeamStats, error)
+type League interface {
+	GetStats(ctx context.Context, owner string, repos []string) (TeamStats, error)
 }
 
-func NewServer(tmpl *template.Template, service IntegrationsService) *Server {
+func NewServer(tmpl *template.Template, league League) *Server {
 	return &Server{
-		tmpl:                tmpl,
-		integrationsService: service,
+		tmpl:   tmpl,
+		league: league,
 	}
 }
 
@@ -33,17 +33,17 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		teamIntegrations, err := s.integrationsService.GetIntegrations(r.Context(), owner, repos)
+		stats, err := s.league.GetStats(r.Context(), owner, repos)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		err = s.tmpl.Execute(w, teamIntegrations)
+		err = s.tmpl.Execute(w, stats)
 
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Problem rendering integrations %s", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Problem rendering stats %s", err), http.StatusInternalServerError)
 			return
 		}
 	}

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/go-github/v28/github"
 	"github.com/quii/ci-league"
+	"github.com/quii/ci-league/github"
 	"html/template"
 	"log"
 	"net/http"
@@ -13,10 +13,9 @@ import (
 const defaultPort = ":8000"
 
 func main() {
+	client := github.NewClient(os.Getenv("GITHUB_TOKEN"))
 
-	client := createGithubClient()
-
-	service := ci_league.NewGithubIntegrationsService(client, map[string]string{
+	mappings := map[string]string{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
 		"27856297+dependabot-preview[bot]@users.noreply.github.com": "Depandabot",
 		"qui666@gmail.com":            "Chris",
@@ -27,7 +26,9 @@ func main() {
 		"lisamccormack85@gmail.com":   "Lisa",
 		"reis.ivo@gmail.com":          "Ivo",
 		"ckurzeja@scottlogic.com":     "CK",
-	})
+	}
+
+	service := ci_league.NewLeagueService(github.NewService(client), mappings)
 
 	server := ci_league.NewServer(
 		template.Must(template.ParseFiles("template.html")),
@@ -40,17 +41,6 @@ func main() {
 	if err := http.ListenAndServe(port, server); err != nil {
 		log.Fatalf("Couldn't launch server listening on %s, %s", port, err)
 	}
-}
-
-func createGithubClient() *github.Client {
-	var client *github.Client
-	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
-		client = github.NewClient(ci_league.NewOAauth2HTTPClient(token))
-	} else {
-		fmt.Println("Warning, providing no GITHUB_TOKEN env var means this will only work for public repos")
-		client = github.NewClient(nil)
-	}
-	return client
 }
 
 func getPort() string {

@@ -1,6 +1,8 @@
 package ci_league
 
-import "sort"
+import (
+	"sort"
+)
 
 type Dev struct {
 	Name   string
@@ -38,17 +40,17 @@ func NewTeamStats(integrations map[Dev]GitStat) TeamStats {
 }
 
 func (t TeamStats) Total() int {
-	total := 0
+	totalCommits := 0
 	for _, integration := range t {
-		total += integration.Commits
+		totalCommits += integration.Commits
 	}
-	return total
+	return totalCommits
 }
 
 func (t TeamStats) TotalFails() int {
-	total := 0
+	totalFails := 0
 	for _, integration := range t {
-		total += integration.Failures
+		totalFails += integration.Failures
 	}
-	return total
+	return totalFails
 }
