@@ -13,4 +13,3 @@ func extractCoAuthor(message string) string {
 	}
 	return ""
 }
-

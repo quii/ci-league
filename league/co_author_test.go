@@ -4,21 +4,21 @@ import "testing"
 
 func TestExtractCoAuthor(t *testing.T) {
 	tests := []struct {
-		name string
+		name   string
 		commit string
-		want string
+		want   string
 	}{
 		{
-			"With co-author",
-			`Remove default setting of anchor by useActiveNavItem
+			name: "With co-author",
+			commit: `Remove default setting of anchor by useActiveNavItem
 
 Co-authored-by: LisaMcCormack <lisamccormack85@gmail.com>`,
-			"lisamccormack85@gmail.com",
+			want: "lisamccormack85@gmail.com",
 		},
 		{
-			"Without co-author",
-			`refactoring`,
-			"",
+			name:   "Without co-author",
+			commit: `refactoring`,
+			want:   "",
 		},
 	}
 	for _, tt := range tests {

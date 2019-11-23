@@ -10,7 +10,7 @@ type Dev struct {
 }
 
 type GitStat struct {
-	Commits int
+	Commits  int
 	Failures int
 }
 
@@ -29,7 +29,7 @@ func NewTeamStats(integrations map[Dev]GitStat) TeamStats {
 	var stats []DevStats
 	for dev, stat := range integrations {
 		stats = append(stats, DevStats{
-			Dev:          dev,
+			Dev:     dev,
 			GitStat: stat,
 		})
 	}

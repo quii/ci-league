@@ -17,7 +17,7 @@ type CommitService interface {
 }
 
 type Service struct {
-	idMappings map[string]string
+	idMappings    map[string]string
 	commitService CommitService
 }
 

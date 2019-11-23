@@ -9,7 +9,7 @@ import (
 )
 
 type Service struct {
-	client     *github.Client
+	client *github.Client
 }
 
 func NewService(client *github.Client) *Service {
@@ -54,4 +54,3 @@ func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string,
 	}
 	return allCommits, nil
 }
-
