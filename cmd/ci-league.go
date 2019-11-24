@@ -39,6 +39,7 @@ func main() {
 	port := getPort()
 
 	fmt.Println("Listening on port", port)
+	fmt.Printf("Try http://localhost%s/integrations?owner=quii&repo=ci-league\n", port)
 	if err := http.ListenAndServe(port, server); err != nil {
 		log.Fatalf("Couldn't launch server listening on %s, %s", port, err)
 	}
@@ -47,7 +48,7 @@ func main() {
 func getPort() string {
 	port := defaultPort
 	if envPort := os.Getenv("PORT"); envPort != "" {
-		port = envPort
+		port = ":" + envPort
 	}
 	return port
 }
