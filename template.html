@@ -1,7 +1,7 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css?family=VT323&display=swap" rel="stylesheet">
-    <title>99 CI LEAGUE</title>
+    <title>CI LEAGUE</title>
     <style>
         * {
             font-family: 'VT323', monospace;
@@ -45,6 +45,7 @@
             text-decoration: none;
             color: #ffe221;
             font-size: 2.8rem;
+            text-transform: capitalize;
         }
 
         td {
@@ -54,7 +55,11 @@
         }
 
         tr {
-            border-bottom: 1px solid #FFFFFF;
+            border-bottom: 1px solid white;
+        }
+
+        tr:first-child {
+            border-top: 1px solid white;
         }
 
         table td:nth-child(4) {
@@ -76,7 +81,7 @@
 </head>
 <body>
 <table>
-    <caption>This week's continuous integration standings</caption>
+    <caption>CI HIGH-SCORES</caption>
     <thead>
     <tr>
         <th colspan="2">Dev</th>
