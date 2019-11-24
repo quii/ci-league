@@ -61,6 +61,7 @@ func (g *Service) newSimpleCommit(ctx context.Context, owner string, repo string
 		AvatarURL: commit.GetAuthor().GetAvatarURL(),
 		Message:   commit.GetCommit().GetMessage(),
 		Status:    status.GetState(),
+		CreatedAt: commit.GetCommit().GetAuthor().GetDate(),
 	}
 
 	return simpleCommit, nil

@@ -10,6 +10,7 @@ type SimpleCommit struct {
 	AvatarURL string
 	Message   string
 	Status    string
+	CreatedAt time.Time
 }
 
 type CommitService interface {
