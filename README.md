@@ -10,6 +10,10 @@ Generates a league table of committers to master for a given github repo
 
 `$ go run cmd/ci-league.go`
 
+or
+
+`$ docker run -p 8000:8000 quii/ci-league`
+
 Visit `http://localhost:8000?owner={owner}&repo={repo}`
 
 ### options via environment variables
