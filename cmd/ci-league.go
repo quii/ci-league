@@ -29,9 +29,11 @@ func main() {
 		"ckurzeja@scottlogic.com":     "CK",
 	}
 
+	service := github.NewCachedService(github.NewService(client), os.Stdout)
+
 	server := league.NewServer(
 		template.Must(template.ParseFiles(templatePath)),
-		league.NewService(github.NewService(client), mappings),
+		league.NewService(service, mappings),
 	)
 
 	port := getPort()
