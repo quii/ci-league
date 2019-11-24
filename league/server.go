@@ -13,7 +13,7 @@ type Server struct {
 }
 
 type League interface {
-	GetStats(ctx context.Context, owner string, repos []string) (TeamStats, error)
+	GetStats(ctx context.Context, owner string, repos []string) (*TeamStats, error)
 }
 
 func NewServer(tmpl *template.Template, league League) *Server {

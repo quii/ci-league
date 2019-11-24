@@ -23,39 +23,27 @@ type DevStats struct {
 	Dev
 }
 
-type TeamStats []DevStats
+type TeamStats struct {
+	DevStats                             []DevStats
+	TotalCommits, TotalFails, TotalScore int
+}
 
-func NewTeamStats(integrations map[Dev]GitStat) TeamStats {
-	var stats []DevStats
+func NewTeamStats(integrations map[Dev]GitStat) *TeamStats {
+	team := &TeamStats{}
 	for dev, stat := range integrations {
-		stats = append(stats, DevStats{
+		team.DevStats = append(team.DevStats, DevStats{
 			Dev:     dev,
 			GitStat: stat,
 		})
+
+		team.TotalCommits += stat.Commits
+		team.TotalFails += stat.Failures
+		team.TotalScore += stat.Score()
 	}
-	sort.Slice(stats, func(i, j int) bool {
-		return stats[i].Score() > stats[j].Score()
+
+	sort.Slice(team.DevStats, func(i, j int) bool {
+		return team.DevStats[i].Score() > team.DevStats[j].Score()
 	})
-	return stats
-}
 
-func (t TeamStats) Total() (totalCommits int) {
-	for _, integration := range t {
-		totalCommits += integration.Commits
-	}
-	return
-}
-
-func (t TeamStats) TotalFails() (totalFails int) {
-	for _, integration := range t {
-		totalFails += integration.Failures
-	}
-	return
-}
-
-func (t TeamStats) TotalScore() (totalScore int) {
-	for _, integration := range t {
-		totalScore += integration.Score()
-	}
-	return
+	return team
 }

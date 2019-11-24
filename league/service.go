@@ -30,7 +30,7 @@ func NewService(commitService CommitService, aliasService AliasService) *Service
 	return &Service{aliasService: aliasService, commitService: commitService}
 }
 
-func (g *Service) GetStats(ctx context.Context, owner string, repos []string) (TeamStats, error) {
+func (g *Service) GetStats(ctx context.Context, owner string, repos []string) (*TeamStats, error) {
 	frequency, err := g.GetCommitFrequency(ctx, owner, repos)
 
 	if err != nil {

@@ -65,8 +65,12 @@
             color: #ffe221;
         }
 
+        tfoot {
+            background: deeppink;
+        }
+
         tfoot td {
-            color: deeppink !important; /* sue me */
+            color: white !important; /* sue me */
         }
     </style>
 </head>
@@ -82,7 +86,7 @@
     </tr>
     </thead>
     <tbody>
-    {{range .}}
+    {{range .DevStats}}
         <tr>
             <td><img alt="{{.Dev.Name}}" src="{{.Dev.Avatar}}"/></td>
             <td>{{.Dev.Name}}</td>
@@ -95,7 +99,7 @@
     <tfoot>
     <tr>
         <td colspan="2">Team</td>
-        <td>{{.Total}}</td>
+        <td>{{.TotalCommits}}</td>
         <td>{{.TotalFails}}</td>
         <td>{{.TotalScore}}</td>
     </tr>
