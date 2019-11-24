@@ -42,7 +42,13 @@ func NewTeamStats(integrations map[Dev]GitStat) *TeamStats {
 	}
 
 	sort.Slice(team.DevStats, func(i, j int) bool {
-		return team.DevStats[i].Score() > team.DevStats[j].Score()
+		if team.DevStats[i].Score() > team.DevStats[j].Score() {
+			return true
+		}
+		if team.DevStats[i].Name > team.DevStats[i].Name {
+			return true
+		}
+		return false
 	})
 
 	return team
