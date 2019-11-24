@@ -1,0 +1,7 @@
+.idea
+.git
+.github
+.gitignore
+.travis.yml
+README.md
+Dockerfile
