@@ -39,18 +39,23 @@ func NewTeamStats(integrations map[Dev]GitStat) TeamStats {
 	return stats
 }
 
-func (t TeamStats) Total() int {
-	totalCommits := 0
+func (t TeamStats) Total() (totalCommits int) {
 	for _, integration := range t {
 		totalCommits += integration.Commits
 	}
-	return totalCommits
+	return
 }
 
-func (t TeamStats) TotalFails() int {
-	totalFails := 0
+func (t TeamStats) TotalFails() (totalFails int) {
 	for _, integration := range t {
 		totalFails += integration.Failures
 	}
-	return totalFails
+	return
+}
+
+func (t TeamStats) TotalScore() (totalScore int) {
+	for _, integration := range t {
+		totalScore += integration.Score()
+	}
+	return
 }

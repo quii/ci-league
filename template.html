@@ -3,7 +3,7 @@
     <link href="https://fonts.googleapis.com/css?family=VT323&display=swap" rel="stylesheet">
     <title>99 CI LEAGUE</title>
     <style>
-        *{
+        * {
             font-family: 'VT323', monospace;
             margin: 0;
             border: 0;
@@ -11,16 +11,16 @@
             color: white;
         }
 
-        html{
+        html {
             background-color: #000000;
         }
 
-        table{
+        table {
             margin: 30px auto;
             border-collapse: collapse;
         }
 
-        body{
+        body {
             margin: 0px 0% 30px 0%;
         }
 
@@ -33,68 +33,73 @@
             height: 90px;
         }
 
-        th{
+        th {
             background-color: black;
             color: white;
             font-size: 2rem;
             font-weight: bold;
         }
 
-        h1{
+        caption {
             text-align: center;
             text-decoration: none;
             color: #ffe221;
-            margin: 30px;
-            display: block;
+            font-size: 2.8rem;
         }
 
-        td{
+        td {
             color: #77ff21;
             text-align: center;
             font-size: 4rem;
         }
 
-        tr{
+        tr {
             border-bottom: 1px solid #FFFFFF;
         }
 
-        table td:nth-child(4){
-            color:red;
+        table td:nth-child(4) {
+            color: red;
         }
 
-        table td:nth-child(3){
+        table td:nth-child(3) {
             color: #ffe221;
         }
 
-        .fail {
-            color: red;
+        tfoot td {
+            color: deeppink !important; /* sue me */
         }
     </style>
 </head>
 <body>
-<main>
-    <h1>This week's continuous integration standings (team total: {{.Total}} - <span class="fail">{{.TotalFails}} failed builds</span>)</h1>
-    <table>
-        <thead>
+<table>
+    <caption>This week's continuous integration standings</caption>
+    <thead>
+    <tr>
+        <th colspan="2">Dev</th>
+        <th>Commits to master</th>
+        <th>Failures</th>
+        <th>Score</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .}}
         <tr>
-            <th colspan="2">Dev</th>
-            <th>Commits to master</th>
-            <th>Failures</th>
-            <th>Score</th>
+            <td><img alt="{{.Dev.Name}}" src="{{.Dev.Avatar}}"/></td>
+            <td>{{.Dev.Name}}</td>
+            <td>{{.GitStat.Commits}}</td>
+            <td>{{.GitStat.Failures}}</td>
+            <td>{{.GitStat.Score}}</td>
         </tr>
-        </thead>
-        <tbody>
-        {{range .}}
-            <tr>
-                <td><img alt="{{.Dev.Name}}" src="{{.Dev.Avatar}}"/></td>
-                <td>{{.Dev.Name}}</td>
-                <td>{{.GitStat.Commits}}</td>
-                <td>{{.GitStat.Failures}}</td>
-                <td>{{.GitStat.Score}}</td>
-            </tr>
-        {{end}}
-        </tbody>
-    </table>
-</main>
+    {{end}}
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="2">Team</td>
+        <td>{{.Total}}</td>
+        <td>{{.TotalFails}}</td>
+        <td>{{.TotalScore}}</td>
+    </tr>
+    </tfoot>
+</table>
 </body>
 </html>
