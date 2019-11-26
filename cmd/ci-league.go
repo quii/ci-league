@@ -19,14 +19,14 @@ func main() {
 	mappings := InMemoryAliasService{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
 		"27856297+dependabot-preview[bot]@users.noreply.github.com": "Depandabot",
-		"qui666@gmail.com":            "Chris",
-		"riyaddattani@gmail.com":      "Riya",
-		"rick@22px.io":                "Ricky",
-		"karol.slomczynski@gmail.com": "Osh",
-		"riya_dattani@hotmail.com":    "Riya",
-		"lisamccormack85@gmail.com":   "Lisa",
-		"reis.ivo@gmail.com":          "Ivo",
-		"ckurzeja@scottlogic.com":     "CK",
+		"qui666@gmail.com":                              "Chris",
+		"riyaddattani@gmail.com":                        "Riya",
+		"rick@22px.io":                                  "Ricky",
+		"karol.slomczynski@gmail.com":                   "Osh",
+		"43116906+riyadattani@users.noreply.github.com": "Riya",
+		"lisamccormack85@gmail.com":                     "Lisa",
+		"reis.ivo@gmail.com":                            "Ivo",
+		"ckurzeja@scottlogic.com":                       "CK",
 	}
 
 	service := github.NewCachedService(github.NewService(client), os.Stdout)
