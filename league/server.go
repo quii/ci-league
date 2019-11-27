@@ -23,27 +23,27 @@ func NewServer(tmpl *template.Template, league League) *Server {
 	}
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/integrations" {
-		owner := r.URL.Query().Get("owner")
-		repos := r.URL.Query()["repo"]
+func (this *Server) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+	if req.URL.Path == "/integrations" {
+		owner := req.URL.Query().Get("owner")
+		repos := req.URL.Query()["repo"]
 
 		if owner == "" || len(repos) == 0 {
-			http.Error(w, "Please provide both 'owner' and 'repo' query string values", http.StatusBadRequest)
+			http.Error(res, "Please provide both 'owner' and 'repo' query string values", http.StatusBadRequest)
 			return
 		}
 
-		stats, err := s.league.GetStats(r.Context(), owner, repos)
+		stats, err := this.league.GetStats(req.Context(), owner, repos)
 
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(res, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		err = s.tmpl.Execute(w, stats)
+		err = this.tmpl.Execute(res, stats)
 
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Problem rendering stats %s", err), http.StatusInternalServerError)
+			http.Error(res, fmt.Sprintf("Problem rendering stats %this", err), http.StatusInternalServerError)
 			return
 		}
 	}

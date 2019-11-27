@@ -55,7 +55,7 @@ func (c CachedService) GetCommits(ctx context.Context, since time.Time, owner st
 	newSince := since
 	if cache.lastUpdated.After(since) {
 		newSince = cache.lastUpdated
-		fmt.Fprintf(c.out, "Fetching since %s\n", since)
+		fmt.Fprintf(c.out, "Fetching since %s\n", newSince)
 	} else {
 		fmt.Fprintf(c.out, "Empty cache for %+v, fetching since %s\n", req, since)
 	}

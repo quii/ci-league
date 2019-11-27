@@ -20,6 +20,7 @@ func main() {
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
 		"27856297+dependabot-preview[bot]@users.noreply.github.com": "Depandabot",
 		"qui666@gmail.com":                              "Chris",
+		"quii666@gmail.com":                             "Chris",
 		"riyaddattani@gmail.com":                        "Riya",
 		"rick@22px.io":                                  "Ricky",
 		"karol.slomczynski@gmail.com":                   "Osh",
