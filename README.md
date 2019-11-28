@@ -20,7 +20,7 @@ Visit `http://localhost:8000?owner={owner}&repo={repo}`
 
 - `PORT` defines the port the server listens on (default 8000)
 - `GITHUB_TOKEN` to get stats for private repos you'll need a [github access token](https://github.com/settings/tokens)
-
+- `MAPPINGS` a path to a JSON file with keys of email addresses to aliases
 ## test
 
 `$ go test ./...`
