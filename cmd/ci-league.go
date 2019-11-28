@@ -19,18 +19,23 @@ func main() {
 	mappings := InMemoryAliasService{
 		"tamara.jordan1+coding@hotmail.com":                         "Tamara",
 		"27856297+dependabot-preview[bot]@users.noreply.github.com": "Depandabot",
-		"qui666@gmail.com":                              "Chris",
-		"quii666@gmail.com":                             "Chris",
-		"riyaddattani@gmail.com":                        "Riya",
-		"rick@22px.io":                                  "Ricky",
-		"karol.slomczynski@gmail.com":                   "Osh",
-		"43116906+riyadattani@users.noreply.github.com": "Riya",
-		"lisamccormack85@gmail.com":                     "Lisa",
-		"reis.ivo@gmail.com":                            "Ivo",
-		"ckurzeja@scottlogic.com":                       "CK",
+		"qui666@gmail.com":                                    "Chris",
+		"quii666@gmail.com":                                   "Chris",
+		"riyaddattani@gmail.com":                              "Riya",
+		"rick@22px.io":                                        "Ricky",
+		"karol.slomczynski@gmail.com":                         "Osh",
+		"43116906+riyadattani@users.noreply.github.com":       "Riya",
+		"lisamccormack85@gmail.com":                           "Lisa",
+		"reis.ivo@gmail.com":                                  "Ivo",
+		"1410207+ivoreis@users.noreply.github.com":            "Ivo",
+		"ckurzeja@scottlogic.com":                             "CK",
+		"jmwright@scottlogic.com":                             "Jonny",
+		"44469595+jonnymwright@users.noreply.github.com 	": "Jonny",
+		"francesco.lentini@gmail.com":                         "Fran",
 	}
 
-	service := github.NewCachedService(github.NewService(client), os.Stdout)
+	service := github.NewService(client)
+	//service := github.NewCachedService(newService, os.Stdout)
 
 	server := league.NewServer(
 		template.Must(template.ParseFiles(templatePath)),

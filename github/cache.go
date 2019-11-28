@@ -40,7 +40,7 @@ type commitCache struct {
 	commits     []league.SimpleCommit
 }
 
-func (c CachedService) GetCommits(ctx context.Context, since time.Time, owner string, repos ...string) ([]league.SimpleCommit, error) {
+func (c *CachedService) GetCommits(ctx context.Context, since time.Time, owner string, repos ...string) ([]league.SimpleCommit, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -67,16 +67,21 @@ func (c CachedService) GetCommits(ctx context.Context, since time.Time, owner st
 	}
 
 	cache.commits = append(cache.commits, newCommits...)
-	cache.commits = removeOldCommits(cache.commits, since)
+
+	fmt.Fprintf(c.out, "Added %d commits to cache", len(newCommits))
+
+	cache.commits = c.removeOldCommits(cache.commits, since)
 	cache.lastUpdated = time.Now()
 
 	return cache.commits, nil
 }
 
-func removeOldCommits(commits []league.SimpleCommit, since time.Time) (commitsSince []league.SimpleCommit) {
+func (c *CachedService) removeOldCommits(commits []league.SimpleCommit, since time.Time) (commitsSince []league.SimpleCommit) {
 	for _, commit := range commits {
 		if commit.CreatedAt.After(since) {
 			commitsSince = append(commitsSince, commit)
+		} else {
+			fmt.Fprintf(c.out, "Discarding old commit %+v", commit)
 		}
 	}
 	return
