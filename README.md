@@ -18,6 +18,8 @@ or
 
 Visit `http://localhost:8000?owner={owner}&repo={repo}`
 
+It doesn't do any fancy auto-refreshing but most browsers have extensions to auto refresh a tab, we set it for every 10 minutes here.
+
 ### options via environment variables
 
 - `PORT` defines the port the server listens on (default 8000)
