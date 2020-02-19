@@ -1,15 +1,21 @@
 package league
 
-import "regexp"
-
-var (
-	coAuthorRegex = regexp.MustCompile(`Co-authored-by:.*<(.*)>`)
+import (
+	"regexp"
 )
 
-func extractCoAuthor(message string) string {
-	matches := coAuthorRegex.FindStringSubmatch(message)
-	if len(matches) > 1 {
-		return matches[1]
+var (
+	coAuthorRegex = regexp.MustCompile(`<(.*?)\>`)
+)
+
+func extractCoAuthor(message string) []string {
+	matches := coAuthorRegex.FindAllStringSubmatch(message, -1)
+	var emails []string
+	if len(matches) > 0 {
+		for _, email := range matches {
+			emails = append(emails, email[1])
+		}
+		return emails
 	}
-	return ""
+	return []string{}
 }
