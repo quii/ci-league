@@ -61,12 +61,15 @@ func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []
 		}
 		avatars[alias] = commit.AvatarURL
 
-		if coAuthor := extractCoAuthor(commit.Message); coAuthor != "" {
-			coAuthor = g.aliasService.GetAlias(coAuthor)
-			if commit.Status == "failure" {
-				failureFrequency[coAuthor]++
+
+		if coAuthors := extractCoAuthor(commit.Message); len(coAuthors) != 0 {
+			for _, author  := range coAuthors {
+				author = g.aliasService.GetAlias(author)
+				if commit.Status == "failure" {
+					failureFrequency[author]++
+				}
+				commitFrequency[author]++
 			}
-			commitFrequency[coAuthor]++
 		}
 	}
 
