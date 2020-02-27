@@ -21,7 +21,7 @@ func TestExtractCoAuthor(t *testing.T) {
 		{
 			name:   "Without co-author",
 			commit: `refactoring`,
-			want:   []string{""},
+			want:   []string{},
 		},
 		{
 			name: "With several co-authors",
