@@ -42,7 +42,7 @@ func (g *Service) GetStats(ctx context.Context, owner string, repos []string) (*
 }
 
 func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []string) (map[Dev]GitStat, error) {
-	allCommits, err := g.commitService.GetCommits(ctx, monday(), owner, repos...)
+	allCommits, err := g.commitService.GetCommits(ctx, lastWeek(), owner, repos...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,9 +61,8 @@ func (g *Service) GetCommitFrequency(ctx context.Context, owner string, repos []
 		}
 		avatars[alias] = commit.AvatarURL
 
-
 		if coAuthors := extractCoAuthor(commit.Message); len(coAuthors) != 0 {
-			for _, author  := range coAuthors {
+			for _, author := range coAuthors {
 				author = g.aliasService.GetAlias(author)
 				if commit.Status == "failure" {
 					failureFrequency[author]++
@@ -98,4 +97,15 @@ func monday() time.Time {
 	year, month, day := date.Date()
 
 	return time.Date(year, month, day, 0, 0, 0, 0, date.Location())
+}
+
+func lastWeek() time.Time {
+	date := time.Now()
+
+	date = date.Add(-1 * time.Hour * 24 * 7)
+
+	year, month, day := date.Date()
+
+	return time.Date(year, month, day, 0, 0, 0, 0, date.Location())
+
 }
