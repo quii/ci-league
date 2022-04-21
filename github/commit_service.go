@@ -3,9 +3,10 @@ package github
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/google/go-github/v28/github"
 	"github.com/quii/ci-league/league"
-	"time"
 )
 
 type Service struct {
@@ -26,6 +27,8 @@ func (g *Service) GetCommits(ctx context.Context, since time.Time, owner string,
 		}
 		for {
 			commits, response, err := g.client.Repositories.ListCommits(ctx, owner, repo, &options)
+
+			fmt.Printf("Found %d commits in %s/%s since %s\n", len(commits), owner, repo, since)
 
 			if err != nil {
 				return nil, fmt.Errorf("couldn't get commits, %s", err)

@@ -10,7 +10,7 @@ Generates a league table of committers to master for a given github repo.
 
 ## run
 
-`$ go run cmd/ci-league.go`
+`$ go run cmd/*.go`
 
 or
 

@@ -2,19 +2,25 @@ package main
 
 import (
 	"fmt"
-	"github.com/quii/ci-league/github"
-	"github.com/quii/ci-league/league"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/quii/ci-league/github"
+	"github.com/quii/ci-league/league"
 )
 
 const defaultPort = ":8000"
 const templatePath = "template.html"
 
 func main() {
-	client := github.NewClient(os.Getenv("GITHUB_TOKEN"), os.Stderr)
+	ghToken, tokenSet := os.LookupEnv("GITHUB_TOKEN")
+	if !tokenSet {
+		fmt.Println("GITHUB_TOKEN not set")
+	}
+
+	client := github.NewClient(ghToken, os.Stderr)
 
 	service := github.NewService(client)
 	//service := github.NewCachedService(newService, os.Stdout)
